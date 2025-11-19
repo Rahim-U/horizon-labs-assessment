@@ -51,7 +51,8 @@ export const DashboardPage = () => {
     if (isAuthenticated && !authLoading) {
       fetchTasks();
     }
-  }, [isAuthenticated, authLoading, fetchTasks]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated, authLoading]);
 
   // Listen for header menu click event
   useEffect(() => {

@@ -3,7 +3,7 @@
  * Reusable for both create and edit modes
  */
 
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { format } from "date-fns";
@@ -56,7 +56,7 @@ export const TaskForm = ({
     handleSubmit,
     formState: { errors },
     setValue,
-    watch,
+    control,
   } = useForm<TaskFormValues>({
     resolver: zodResolver(taskSchema),
     defaultValues: initialData
@@ -76,7 +76,9 @@ export const TaskForm = ({
         },
   });
 
-  const selectedDate = watch("due_date");
+  const selectedDate = useWatch({ control, name: "due_date" });
+  const status = useWatch({ control, name: "status" });
+  const priority = useWatch({ control, name: "priority" });
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -112,7 +114,7 @@ export const TaskForm = ({
         <div className="space-y-2">
           <Label htmlFor="status">Status</Label>
           <Select
-            value={watch("status")}
+            value={status}
             onValueChange={(value) => setValue("status", value as TaskStatus)}
             disabled={loading}
           >
@@ -133,7 +135,7 @@ export const TaskForm = ({
         <div className="space-y-2">
           <Label htmlFor="priority">Priority</Label>
           <Select
-            value={watch("priority")}
+            value={priority}
             onValueChange={(value) => setValue("priority", value as TaskPriority)}
             disabled={loading}
           >

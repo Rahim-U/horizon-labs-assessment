@@ -8,6 +8,7 @@
 export interface ApiError {
   detail: string | Record<string, string[]>;
   status?: number;
+  isOffline?: boolean;
 }
 
 /**

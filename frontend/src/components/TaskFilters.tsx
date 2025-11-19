@@ -3,7 +3,7 @@
  * Optimized with useCallback to prevent ESLint warnings and improve performance
  */
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -21,14 +21,21 @@ import { X, Search } from "lucide-react";
 export const TaskFilters = () => {
   const { filters, setFilters, resetFilters, sorting, setSorting } = useTasks();
   const [searchQuery, setSearchQuery] = useState(filters.search || "");
+  const filtersRef = useRef(filters);
+
+  // Keep filtersRef in sync
+  useEffect(() => {
+    filtersRef.current = filters;
+  }, [filters]);
 
   // Debounce search input
   useEffect(() => {
     const timer = setTimeout(() => {
-      setFilters((prevFilters) => ({
-        ...prevFilters,
+      setFilters({
+        status: filtersRef.current.status,
+        priority: filtersRef.current.priority,
         search: searchQuery || undefined,
-      }));
+      });
     }, 300);
 
     return () => clearTimeout(timer);
@@ -38,32 +45,35 @@ export const TaskFilters = () => {
   const handleSearchKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      setFilters((prevFilters) => ({
-        ...prevFilters,
+      setFilters({
+        status: filtersRef.current.status,
+        priority: filtersRef.current.priority,
         search: searchQuery || undefined,
-      }));
+      });
     }
   }, [searchQuery, setFilters]);
 
   const handleStatusChange = useCallback((value: string) => {
-    setFilters((prevFilters) => ({
-      ...prevFilters,
+    setFilters({
+      search: filtersRef.current.search,
+      priority: filtersRef.current.priority,
       status: value === "all" ? undefined : (value as TaskStatus),
-    }));
+    });
   }, [setFilters]);
 
   const handlePriorityChange = useCallback((value: string) => {
-    setFilters((prevFilters) => ({
-      ...prevFilters,
+    setFilters({
+      search: filtersRef.current.search,
+      status: filtersRef.current.status,
       priority: value === "all" ? undefined : (value as TaskPriority),
-    }));
+    });
   }, [setFilters]);
 
   const handleSortByChange = useCallback((value: string) => {
     setSorting({
-      sortBy: value as typeof sorting.sortBy,
+      sortBy: value as "created_at" | "updated_at" | "due_date" | "title" | "status" | "priority",
     });
-  }, [setSorting, sorting.sortBy]);
+  }, [setSorting]);
 
   const handleSortOrderChange = useCallback((value: string) => {
     setSorting({
@@ -85,7 +95,7 @@ export const TaskFilters = () => {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             id="search-input"
-            type="search"
+            type="text"
             placeholder="Search tasks..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
