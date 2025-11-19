@@ -1,0 +1,24 @@
+{
+    "files.exclude": {
+        "**/__pycache__": true,
+        "**/*.pyc": true,
+        "**/node_modules": true
+    },
+    "python.terminal.activateEnvironment": false,
+    "terminal.integrated.profiles.windows": {
+        "Python (Backend)": {
+            "path": "powershell.exe",
+            "args": [
+                "-NoExit",
+                "-Command",
+                "cd '${workspaceFolder}/backend'; & '${workspaceFolder}/backend/venv/Scripts/Activate.ps1'"
+            ],
+            "icon": "terminal-powershell"
+        },
+        "PowerShell": {
+            "source": "PowerShell",
+            "icon": "terminal-powershell"
+        }
+    },
+    "terminal.integrated.defaultProfile.windows": "PowerShell"
+}
